@@ -1,64 +1,61 @@
 # Portal
 
-Hey there, fellow seeker! I'm Mwithiga, and on this adventure, I asked myself: "What if cross-transfer of files from Windows to Linux was easy and user-friendly?" Something my non-techy buddies would simply understand. I went to my mentor and asked this question, which we later debated, hence the birth of Portal—a simple, secure, cross-platform command-line tool for peer-to-peer file transfers on a local network.
+Hey there, fellow seeker! I'm Mwithiga.
 
-## Features
+I built Portal to solve a persistent frustration: the friction of moving files between machines on the same network. I wanted something that felt like a "portal"—instant, secure, and requiring zero configuration. 
 
-- **Automatic Discovery:** Uses Zeroconf (Bonjour) to automatically find other devices without needing to know IP addresses.
-- **Secure Transfer:** Encrypts all file transfers using SSL/TLS with self-signed certificates.
-- **Cross-Platform:** Written in Python, it runs on Linux, macOS, and Windows.
-- **Peer-to-Peer:** Files are sent directly between your devices, not through a third-party server.
-
-## Project Setup
-
-1.  **Create a Virtual Environment:** This keeps the project's dependencies isolated.
-    ```bash
-    python3 -m venv venv
-    ```
-
-2.  **Activate the Environment:**
-    ```bash
-    # On Linux/macOS
-    source venv/bin/activate
-    ```
-
-3.  **Install Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Generate Security Certificate:** Create the self-signed certificate needed for encrypted transfers.
-    ```bash
-    openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes -subj "/CN=portal"
-    ```
-
-## Usage
-
-You will need two terminals open to test the application.
-
-1.  **Start the Receiver:** In your first terminal, start the listener. It will wait for incoming files.
-    ```bash
-    python portal.py
-    ```
-
-2.  **Send a File:** In your second terminal, use the `sender.py` script, providing the path to the file you want to send.
-    ```bash
-    python sender.py /path/to/your/file.txt
-    ```
-    The file will be received and saved as `received_file.txt` in the project directory.
+Portal is my exploration into P2P networking and encryption. It is a zero-configuration, secure file transfer tool designed for speed and simplicity. By using local network discovery (mDNS) and automated SSL encryption, it allows you to move files between machines instantly through a professional, interactive CLI.
 
 ## The Development Journey
 
-My goal was simple, but the path to a reliable tool had some classic networking challenges. Here's how I navigated them.
+The main challenge I faced was handling the technical complexities of discovery and security without burdening the user. Most file-sharing tools require manual IP entry or complex setup. I wanted to eliminate that.
 
-### The First Hurdle: The Race Condition
+By implementing Multicast DNS (mDNS) through the `zeroconf` library, I allowed instances of Portal to "find" each other automatically on a local network. Security was the next priority; I automated the generation of SSL certificates to ensure that every transfer is encrypted from end to end, without the user ever needing to touch a configuration file.
 
-My first real challenge was a classic race condition. My initial script had the sender send the file and immediately close the connection. This was too fast for the receiver, which would often crash with a `Connection reset by peer` error because it was trying to read from a connection that was already closed.
+This project was a great exercise in balancing robust backend networking with a clean, user-friendly frontend. Using the `rich` library allowed me to create a terminal interface that feels modern and provides real-time feedback through progress bars and status updates.
 
-### The Second Hurdle: The Deadlock
+## Features
 
-To solve this, I implemented a handshake: the receiver would send back an "OK" to confirm the transfer. This seemed smart, but it created a new, even trickier problem: a deadlock. The receiver was now waiting for the connection to close to know the file was done, while the sender was waiting for the "OK" message before it would close the connection. Both programs were stuck, waiting for each other.
+- **Zero Configuration**: Automatically discovers other Portal instances on the local network.
+- **End-to-End Encryption**: Every transfer is secured with automated SSL/TLS.
+- **Interactive CLI**: A user-friendly menu system for sending and receiving files.
+- **Automatic Compression**: Transparently zips folders before transmission to ensure efficient transfers.
 
-### The Final Solution: A Better Protocol
+## Getting Started
 
-I realized the root issue was the lack of a clear "end-of-file" signal within an open connection. The final, and correct, solution was to build a more robust protocol. Now, the sender first sends the filename and the exact file size. This way, the receiver knows exactly how much data to expect, reads it all, and *then* confidently sends back the "OK" confirmation. This approach removed all the ambiguity and finally made the transfer reliable.
+To get started with Portal, follow these steps to set up the environment on each machine.
+
+### Prerequisites
+
+- Python 3.x
+- `pip`
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/vintageGent/portal.git
+   cd portal
+   ```
+
+2. Install the necessary dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Usage
+
+The easiest way to use Portal is through the interactive menu:
+
+```bash
+python3 cli.py
+```
+
+From here, you can choose to:
+1. **Receive File**: Puts your machine in discoverable mode to accept incoming transfers.
+2. **Send File**: Scans the network for available receivers and prompts for the file path.
+3. **Help**: Provides a quick walkthrough of the tool's capabilities.
+
+## A Personal Connection
+
+Portal represents my commitment to the "seeker" philosophy—finding elegant solutions to common problems. It turns the complex task of secure P2P networking into a seamless experience, allowing the focus to remain on the content being shared, rather than the mechanism of sharing.
