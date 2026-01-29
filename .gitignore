@@ -3,5 +3,6 @@ __pycache__/
 *.pem
 *.html
 *.txt
+!requirements.txt
 *.zip
 .vscode/
