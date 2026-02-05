@@ -14,6 +14,16 @@ By implementing Multicast DNS (mDNS) through the `zeroconf` library, I allowed i
 
 This project was a great exercise in balancing robust backend networking with a clean, user-friendly frontend. Using the `rich` library allowed me to create a terminal interface that feels modern and provides real-time feedback through progress bars and status updates.
 
+## How it Works (The "Push" Model)
+
+Think of Portal like **passing a sealed note** to a friend in class.
+
+*   **You (The Sender):** Choose exactly *which* note (file) to pass.
+*   **They (The Receiver):** Just hold out their hand (open Portal) to take it.
+
+**Why this way?**
+It's safer. Instead of letting someone browse your computer to "pull" what they want, you explicitly "push" **only** the file you want to share. Nothing else on your computer is seen or touched.
+
 ## Features
 
 - **Zero Configuration**: Automatically discovers other Portal instances on the local network.
@@ -47,19 +57,22 @@ source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-### Usage
+### 2. How to Use
 
-The easiest way to use Portal is through the interactive menu:
+**Step A: The Receiver (The destination computer)**
+1.  Run the app: `python3 cli.py`
+2.  Select **Option 1: Receive File**.
+3.  That's it! It's now waiting.
 
-```bash
-python3 cli.py
-```
-
-From here, you can choose to:
-1. **Receive File**: Puts your machine in discoverable mode to accept incoming transfers.
-2. **Send File**: Scans the network for available receivers and prompts for the file path.
+**Step B: The Sender (The source computer)**
+1.  Run the app: `python3 cli.py`
+2.  Select **Option 2: Send File**.
+3.  It will ask: `Enter path to file or directory`.
+    *   **Tip:** You can just drag and drop the file into the terminal window to get the path!
+4.  Portal will find the Receiver automatically and beams the file over. 🚀
 3. **Help**: Provides a quick walkthrough of the tool's capabilities.
 
 ## A Personal Connection
 
+Portal represents my commitment to the "seeker" philosophy—finding elegant solutions to common problems. It turns the complex task of secure P2P networking into a seamless experience, allowing the focus to remain on the content being shared, rather than the mechanism of sharing.
 Portal represents my commitment to the "seeker" philosophy—finding elegant solutions to common problems. It turns the complex task of secure P2P networking into a seamless experience, allowing the focus to remain on the content being shared, rather than the mechanism of sharing.
