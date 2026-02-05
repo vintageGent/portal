@@ -37,8 +37,12 @@ To get started with Portal, follow these steps to set up the environment on each
    git clone https://github.com/vintageGent/portal.git
    cd portal
    ```
-
-2. Install the necessary dependencies:
+2. Set up the environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+3. Install the necessary dependencies:
    ```bash
    pip install -r requirements.txt
    ```
