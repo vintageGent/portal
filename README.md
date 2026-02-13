@@ -2,6 +2,8 @@
 
 Hey there, fellow seeker! I'm Mwithiga.
 
+As a Public Relations student, I'm always looking for ways to improve how we share information. I believe that through code and technology, we can create seamless "portals" for communication and collaboration.
+
 I built Portal to solve a persistent frustration: the friction of moving files between machines on the same network. I wanted something that felt like a "portal"—instant, secure, and requiring zero configuration. 
 
 Portal is my exploration into P2P networking and encryption. It is a zero-configuration, secure file transfer tool designed for speed and simplicity. By using local network discovery (mDNS) and automated SSL encryption, it allows you to move files between machines instantly through a professional, interactive CLI.
@@ -26,36 +28,29 @@ It's safer. Instead of letting someone browse your computer to "pull" what they 
 
 ## Features
 
-- **Zero Configuration**: Automatically discovers other Portal instances on the local network.
-- **End-to-End Encryption**: Every transfer is secured with automated SSL/TLS.
-- **Interactive CLI**: A user-friendly menu system for sending and receiving files.
-- **Automatic Compression**: Transparently zips folders before transmission to ensure efficient transfers.
+- **✅ Zero Friction**: No typing IP addresses or confusing port numbers.
+- **✅ Auto-Discovery**: Devices find each other automatically on WiFi.
+- **✅ Private & Secure**: Files are encrypted during travel (so no one can peek).
+- **✅ Universal**: Works between Windows, Linux, and Mac.
 
 ## Getting Started
 
-To get started with Portal, follow these steps to set up the environment on each machine.
+### 1. Installation
 
-### Prerequisites
+Open your terminal and run these commands to set up the Portal engine:
 
-- Python 3.x
-- `pip`
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/vintageGent/portal.git
-   cd portal
-   ```
-2. Set up the environment:
 ```bash
+# 1. Get the code
+git clone https://github.com/vintageGent/portal.git
+cd portal
+
+# 2. Setup the "Virtual Environment" (Keeps things clean)
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+
+# 3. Install the dependencies
+pip install -r requirements.txt
 ```
-3. Install the necessary dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
 
 ### 2. How to Use
 
@@ -63,7 +58,6 @@ source venv/bin/activate
 1.  Run the app: `python3 cli.py`
 2.  Select **Option 1: Receive File**.
 3.  That's it! It's now waiting.
-
 **Step B: The Sender (The source computer)**
 1.  Run the app: `python3 cli.py`
 2.  Select **Option 2: Send File**.

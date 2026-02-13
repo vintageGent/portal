@@ -83,12 +83,12 @@ def run_interactive():
         choice = input("\nEnter choice (1-4): ")
         
         if choice == '1':
-            port_str = input("Enter port (default: 8080): ")
-            port = int(port_str) if port_str.strip() else 8080
+            console.print("[dim]Starting Receiver (Auto-finding port)...[/]")
             out_dir = input("Enter output directory (default: .): ") or "."
             
             from portal import start_receiver
-            start_receiver(port, out_dir)
+            # Port logic is now handled in portal.py's start_receiver via find_available_port
+            start_receiver(8080, out_dir)
             input("\nPress Enter to return to menu...")
             
         elif choice == '2':

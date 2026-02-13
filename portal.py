@@ -21,6 +21,18 @@ def get_ip_address():
     finally:
         s.close()
     return IP
+    
+def find_available_port(start_port=8080):
+    """Finds an available port starting from start_port."""
+    port = start_port
+    while port < 65535:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('', port))
+                return port
+            except OSError:
+                port += 1
+    return start_port # Fallback
 
 def handle_connection(conn, addr, output_dir):
     """Handles an incoming file transfer connection."""
@@ -90,22 +102,26 @@ def start_receiver(port, output_dir):
         
     context.load_cert_chain(certfile='cert.pem', keyfile='key.pem')
 
+    
+    # Auto-find port if exact one is busy
+    final_port = find_available_port(port)
+    
     # Register Service
     info = ServiceInfo(
         type_=service_type, name=service_name,
-        addresses=[socket.inet_aton(ip_address)], port=port,
+        addresses=[socket.inet_aton(ip_address)], port=final_port,
     )
     zeroconf = Zeroconf()
     zeroconf.register_service(info)
     
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((ip_address, port))
+    server_socket.bind((ip_address, final_port))
     server_socket.listen(5)
     
     console.print(Panel(
         f"[bold]Receiver Active[/]\n"
         f"IP: [cyan]{ip_address}[/]\n"
-        f"Port: [cyan]{port}[/]\n"
+        f"Port: [cyan]{final_port}[/]\n"
         f"Saving to: [yellow]{os.path.abspath(output_dir)}[/]",
         title="Portal Listening",
         border_style="green"
