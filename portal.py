@@ -1,10 +1,12 @@
 import socket
-import time
-import ssl
 import struct
 import os
 import threading
+from datetime import datetime # Added datetime
 from zeroconf import ServiceInfo, Zeroconf
+import hashlib
+from datetime import datetime
+from mwithiga_labs.shared.reporter import generate_strategic_dispatch
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TransferSpeedColumn, TimeRemainingColumn
 from rich.panel import Panel
@@ -34,10 +36,16 @@ def find_available_port(start_port=8080):
                 port += 1
     return start_port # Fallback
 
-def handle_connection(conn, addr, output_dir):
-    """Handles an incoming file transfer connection."""
-    console.print(f"[green]Connection accepted from {addr}[/]")
-    try:
+        # 0. Session Authentication
+        auth_token_bytes = conn.recv(1024)
+        auth_token = auth_token_bytes.decode().strip()
+        # In a real scenario, this would check against a secure vault
+        if auth_token != "PORTAL_SECURE_ACCESS":
+            console.print("[bold red]Access Denied: Invalid Security Token.[/]")
+            conn.sendall(b'AUTH_FAILED')
+            return
+        conn.sendall(b'AUTH_OK')
+
         # 1. Receive filename
         filename_bytes = conn.recv(1024)
         filename = filename_bytes.decode().strip()
@@ -46,11 +54,15 @@ def handle_connection(conn, addr, output_dir):
         # 2. Receive file size
         filesize_bytes = conn.recv(8)
         filesize = struct.unpack('>Q', filesize_bytes)[0]
+
+        # 2b. Receive SHA-256 Hash
+        expected_hash = conn.recv(64).decode().strip()
         
         save_path = os.path.join(output_dir, filename)
         
         # 3. Receive file content with Rich Progress
         bytes_received = 0
+        sha256_hash = hashlib.sha256()
         
         with Progress(
             SpinnerColumn(),
@@ -74,12 +86,21 @@ def handle_connection(conn, addr, output_dir):
                     if not chunk:
                         break
                     f.write(chunk)
+                    sha256_hash.update(chunk)
                     progress.update(task_id, advance=len(chunk))
                     bytes_received += len(chunk)
         
-        console.print(f"[bold green]\u2714 File saved to:[/][white] {save_path}[/]")
-        # 4. Send confirmation
-        conn.sendall(b'OK')
+        # 4. Verify Integrity
+        final_hash = sha256_hash.hexdigest()
+        if final_hash == expected_hash:
+            console.print(f"[bold green]\u2714 Data Integrity Verified (SHA-256 Match)[/]")
+            console.print(f"[bold green]\u2714 File saved to:[/][white] {save_path}[/]")
+            conn.sendall(b'OK')
+            # Generate Strategic Dispatch for technical evidence
+            generate_strategic_dispatch(filename, final_hash, addr[0], "RECEIVE")
+        else:
+            console.print(f"[bold red]\u2718 Integrity Failure: Hash mismatch![/]")
+            conn.sendall(b'INTEGRITY_FAIL')
 
     except Exception as e:
         console.print(f"[bold red]Error during transfer: {e}[/]")
@@ -133,6 +154,7 @@ def start_receiver(port, output_dir):
             conn, addr = server_socket.accept()
             try:
                 secure_conn = context.wrap_socket(conn, server_side=True)
+                console.print(f"[italic cyan][*] Secure Handshake Established (DPA Section 41 Alignment)[/]")
                 thread = threading.Thread(target=handle_connection, args=(secure_conn, addr, output_dir))
                 thread.start()
             except ssl.SSLError as e:

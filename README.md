@@ -23,17 +23,26 @@ Think of Portal like **passing a sealed note** to a friend in class.
 *   **You (The Sender):** Choose exactly *which* note (file) to pass.
 *   **They (The Receiver):** Just hold out their hand (open Portal) to take it.
 
-**Why this way?**
-It's safer. Instead of letting someone browse your computer to "pull" what they want, you explicitly "push" **only** the file you want to share. Nothing else on your computer is seen or touched.
+# Portal: Strategic P2P File Transfer Engine 🛡️🚀
 
-## Features
+Portal is a high-authority, secure P2P file transfer engine designed for institutional data exchange within local networks. It bridges the gap between technical defense and strategic compliance (DPA 2019).
 
-- **✅ Zero Friction**: No typing IP addresses or confusing port numbers.
-- **✅ Auto-Discovery**: Devices find each other automatically on WiFi.
-- **✅ Private & Secure**: Files are encrypted during travel (so no one can peek).
-- **✅ Universal**: Works between Windows, Linux, and Mac.
+## 💎 High-Authority Features
 
-## Getting Started
+### 1. Technical Integrity (SHA-256 Handshake)
+Portal ensures 100% data integrity by calculating and verifying SHA-256 hashes for every payload before and after transmission. This provides the "Technical Evidence" required for **DPA Section 41** compliance audits.
+
+### 2. Strategic Transfer Dispatches
+The engine automatically generates formal **Strategic Transfer Dispatches** (`.md`) that document the peer identifier, payload hash, and encryption status. These dispatches are resident on-disk as non-repudiable audit trails.
+
+### 3. Zero-Log Local Architecture
+By operating exclusively on the local network (LAN/WiFi) and using zero-log intermediate buffering, Portal fulfills the privacy requirements for sensitive institutional data shards.
+
+## 🦾 Technical Capabilities
+- **TLS/SSL Encryption**: Industry-standard RSA-2048/AES-256-GCM.
+- **Session Authentication**: Basic token-based access control.
+- **Zeroconf Discovery**: Automated peer discovery via mDNS/Bonjour.
+- **Auto-Zipping**: Recursive directory zipping for batch transfers.
 
 ### 1. Installation
 

@@ -6,6 +6,9 @@ import ssl
 import struct
 import zipfile
 import shutil
+import hashlib
+from datetime import datetime
+from mwithiga_labs.shared.reporter import generate_strategic_dispatch
 from zeroconf import ServiceBrowser, Zeroconf
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TransferSpeedColumn, TimeRemainingColumn
@@ -71,9 +74,23 @@ class MyServiceListener:
         try:
             with socket.create_connection((host, port)) as sock:
                 with context.wrap_socket(sock, server_hostname=host) as ssock:
+                    # 0. Send Security Token
+                    ssock.sendall(b"PORTAL_SECURE_ACCESS".ljust(1024))
+                    auth_res = ssock.recv(1024)
+                    if auth_res != b'AUTH_OK':
+                        console.print("[bold red]Access Denied: Server rejected security token.[/]")
+                        return
+
                     filesize = os.path.getsize(file_path)
                     filename = os.path.basename(file_path)
                     
+                    # Calculate SHA-256 Hash
+                    sha256_hash = hashlib.sha256()
+                    with open(file_path, 'rb') as f:
+                        for chunk in iter(lambda: f.read(4096), b""):
+                            sha256_hash.update(chunk)
+                    file_hash = sha256_hash.hexdigest()
+
                     console.print(f"Connected. Sending [bold]{filename}[/] ({filesize / (1024*1024):.2f} MB)...")
 
                     # 1. Send filename
@@ -81,6 +98,9 @@ class MyServiceListener:
 
                     # 2. Send filesize
                     ssock.sendall(struct.pack('>Q', filesize))
+
+                    # 2b. Send SHA-256 Hash
+                    ssock.sendall(file_hash.encode().ljust(64))
 
                     # 3. Send file content with Rich Progress
                     with open(file_path, 'rb') as f:
@@ -106,12 +126,17 @@ class MyServiceListener:
                     console.print("\n[dim]Waiting for confirmation...[/]")
                     confirmation = ssock.recv(1024)
                     if confirmation == b'OK':
-                        console.print("[bold green]\u2714 Success: Receiver confirmed receipt.[/]")
+                        console.print("[bold green]\u2714 Success: Receiver confirmed receipt and integrity.[/]")
+                        # Generate Strategic Dispatch for technical evidence
+                        generate_strategic_dispatch(filename, file_hash, host, "SEND")
+                    elif confirmation == b'INTEGRITY_FAIL':
+                        console.print("[bold red]\u2718 Failure: Receiver reported an integrity mismatch![/]")
                     else:
                         console.print("[red]Warning: Receiver sent an unexpected response.[/]")
 
         except Exception as e:
             console.print(f"[bold red]Failed to send file: {e}[/]")
+
 import threading
 
 def start_sender(path, timeout=30):

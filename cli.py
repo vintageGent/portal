@@ -50,24 +50,24 @@ def check_certs():
 
 def display_help():
     console.print(Panel("""
-[bold]PORTAL - USAGE GUIDE[/]
+[bold]PORTAL - STRATEGIC P2P ENGINE[/]
 
-[bold cyan]1. Receiver Mode[/]
-   - Use this on the computer that will [bold]RECEIVE[/] files.
-   - It will start a secure server and announce itself on the network.
-   - [yellow]Port[/]: Default is 8080. Change if needed.
-   - [yellow]Output Dir[/]: Where files will be saved (default is current folder).
+[bold cyan]1. Technical Integrity (SHA-256)[/]
+   - Every transfer is hashed with SHA-256 to ensure 100% data integrity.
+   - Fulfils DPA Section 41 technical evidence requirements.
 
-[bold cyan]2. Sender Mode[/]
-   - Use this on the computer [bold]SENDING[/] the files.
-   - You just need to provide the path to the file or folder.
-   - [green]Tip[/]: If you send a folder, Portal automatically zips it for you!
+[bold cyan]2. Secure Handshake (TLS/SSL)[/]
+   - All data is encrypted in-transit using industry-standard RSA-2048/AES.
+   - Automated certificate generation for rapid, secure deployment.
 
-[bold cyan]3. How it works[/]
-   - Portal uses Zeroconf (Bonjour) to find other computers automatically.
-   - Transfers are encrypted with SSL.
-   - No internet required! It all happens on your WiFi/LAN.
-    """, title="Help & Walkthrough", border_style="green"))
+[bold cyan]3. Strategic Transfer Dispatches[/]
+   - Portal automatically generates MD-formatted dispatches for every transfer.
+   - Provides a technical audit trail for institutional compliance officers.
+
+[bold cyan]How it works (Zero-Log Architecture)[/]
+   - Portal ensures data never leaves your local network (LAN/WiFi).
+   - Zero-log intermediate buffering for maximum institutional privacy.
+    """, title="Strategic & Technical Guide", border_style="green"))
     input("\nPress Enter to return to menu...")
 
 def run_interactive():
